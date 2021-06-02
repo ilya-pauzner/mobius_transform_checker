@@ -1,10 +1,18 @@
+import numpy as np
+
+
 def mobius(a, b, c, d, z):
     return (a * z + b) / (c * z + d)
 
 
 def make_function(z1, z2, z3, w1, w2, w3):
     def inner(a, b, c, d):
-        return abs(mobius(a, b, c, d, z1) - w1) + abs(mobius(a, b, c, d, z2) - w2) + abs(mobius(a, b, c, d, z3) - w3)
+        differences = [
+            abs(mobius(a, b, c, d, z1) - w1),
+            abs(mobius(a, b, c, d, z2) - w2),
+            abs(mobius(a, b, c, d, z3) - w3)
+        ]
+        return sum(differences), np.isclose(differences, 0).sum()
 
     return inner
 
@@ -23,11 +31,11 @@ while True:
     c = complex(input('c: '))
     d = complex(input('d: '))
     try:
-        rem = funcs[variant](a, b, c, d)
+        rem, correct_count = funcs[variant](a, b, c, d)
         if rem > 0:
             raise RuntimeError
     except RuntimeError:
-        print(f'Wrong answer, sum(abs(f(z_i) - w_i)) = {rem}')
+        print(f'Wrong answer, sum(abs(f(z_i) - w_i)) = {rem}, correct points = {correct_count}')
     except ZeroDivisionError:
         print('Zero division')
     else:
